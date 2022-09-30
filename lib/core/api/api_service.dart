@@ -96,7 +96,7 @@ class BackendService {
   /// This allows you change [baseurl] options outside the backend service class
   // void changeBaseUrl(String newBaseUrl) => _dio.options.baseUrl = newBaseUrl;
 
-  apiResponse({dynamic message, dynamic? errorCode}) {
+  apiResponse({dynamic message, dynamic errorCode}) {
     return {
       "message": message ?? "an_error_occurred_please_try_again",
       "errorCode": errorCode ?? "000",
