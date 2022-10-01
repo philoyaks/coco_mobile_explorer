@@ -1,8 +1,8 @@
 import 'package:coco_mobile_explorer/core/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 
-import '../../api/api_service.dart';
-import '../domain/search_repository.dart';
+import '../../../../core/api/api_service.dart';
+import '../../domain/repositories/search_repository.dart';
 
 class SearchRepositoryImplementation implements SearchRepository {
   final BackendService _api = BackendService(Dio());
