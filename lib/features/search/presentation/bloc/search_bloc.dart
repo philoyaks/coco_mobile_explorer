@@ -18,11 +18,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   List<dynamic> captionsJson = [];
 
   final SearchService _searchService;
-  int n = 0;
+  int imagesperApiCalls = 0;
   SearchBloc(this._searchService) : super(SearchInitial()) {
     on<FetchSearchResults>((event, emit) async {
       if (state is SearchInitial) {
-        n = 0;
+        imagesperApiCalls = 0;
       }
       emit(SearchLoading());
       var result = await _fetchresult(event.query, emit);
@@ -36,6 +36,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     });
     on<FetchMoreSearchResults>((event, emit) async {
       var currentState = state as SearchResult;
+      // checks if pagination loader is already present
       if (currentState.showpaginationLoader) return;
 
       emit(SearchResult(currentState.searchResultsModel, currentState.page,
@@ -53,7 +54,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       segmentationJson.clear();
       captionsJson.clear();
 
-      n = 0;
+      imagesperApiCalls = 0;
       emit(SearchInitial());
     });
   }
@@ -66,36 +67,52 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       }
     });
 
+    // checks if the category is valid and send as an error message to the ui
+    if (categoryIds.isEmpty) {
+      return 'Invalid Category';
+    }
+
     if (allImageIds.isEmpty && categoryIds.isNotEmpty) {
       var res = await _searchService.getImagesId(categoryIds);
       if (res.valid!) {
         allImageIds = res.data;
       } else {
-        return res.message!;
+        return res
+            .message!; // returns the error message if there is an error message while calling get images categories
       }
     }
-    int loop = allImageIds.length - n < 5 ? allImageIds.length - n : 5;
 
-    for (var i = n; i < n + loop; i++) {
+    //turns the rest of the image ids into a list of of either 5 or the rest of the image ids if less than 5
+    //helps to get accurate number to loop through
+    int loop = allImageIds.length - imagesperApiCalls < 5
+        ? allImageIds.length - imagesperApiCalls
+        : 5;
+
+    for (var i = imagesperApiCalls; i < imagesperApiCalls + loop; i++) {
       imageIds.add(allImageIds[i]);
     }
-    n += 4;
+    imagesperApiCalls += 4;
 
-    late List result = [[], [], []];
-    result = await Future.wait([
-      _searchService.getImagesUrl(imageIds),
-      _searchService.getImageSegmentation(imageIds),
-      _searchService.getImagesCaption(imageIds)
-    ]);
-
-    imagesJson.addAll(result[0].data);
-    segmentationJson.addAll(result[1].data);
-    captionsJson.addAll(result[2].data);
-    return FetchedResultModel.fromJson(
-      imagesJson,
-      segmentationJson,
-      captionsJson,
-      total: allImageIds.length,
-    );
+    // determines that the image ids are valid and send as an error message to the ui
+    if (imageIds.isNotEmpty) {
+      late List result = [[], [], []];
+      result = await Future.wait([
+        _searchService.getImagesUrl(imageIds),
+        _searchService.getImageSegmentation(imageIds),
+        _searchService.getImagesCaption(imageIds)
+      ]);
+      imageIds.clear();
+      imagesJson.addAll(result[0].data);
+      segmentationJson.addAll(result[1].data);
+      captionsJson.addAll(result[2].data);
+      return FetchedResultModel.fromJson(
+        imagesJson,
+        segmentationJson,
+        captionsJson,
+        total: allImageIds.length,
+      );
+    } else {
+      return 'No Images Found'; // returns an error of no images found if the list has ended
+    }
   }
 }

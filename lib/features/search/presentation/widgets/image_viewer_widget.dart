@@ -10,7 +10,7 @@ class ViewImage extends StatelessWidget {
       height: 300,
       margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: Colors.blueAccent,
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
           image: NetworkImage(imageUrl),

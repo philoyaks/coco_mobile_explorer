@@ -3,6 +3,8 @@ import 'package:coco_mobile_explorer/features/search/presentation/widgets/image_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../widgets/error_dialog_widget.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,7 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         Future.delayed(Duration.zero, () {
-          debugPrint("Reached the end of the list");
+          BlocProvider.of<SearchBloc>(context).add(FetchMoreSearchResults(
+              searchTextEditingController.text.toLowerCase()));
         });
       }
     });
@@ -71,18 +74,44 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          // ),
           BlocConsumer<SearchBloc, SearchState>(
             listener: (context, state) {
-              // TODO: implement listener
+              if (state is SearchError) {
+                if (state.message.contains('Invalid Category')) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.blue,
+                      content: Text('Invalid Category'),
+                    ),
+                  );
+
+                  return;
+                }
+                return showErrorAlert(
+                    context: context,
+                    description: state.message); //Display error alert dialog
+              }
             },
             builder: (context, state) {
+              if (state is SearchLoading) {
+                return const Expanded(
+                    child: Center(child: CircularProgressIndicator()));
+              }
+
               if (state is SearchResult) {
                 return Expanded(
                   child: ListView.builder(
                       controller: scrollController,
-                      itemCount: state.searchResultsModel.images.length,
+                      itemCount: state.searchResultsModel.images.length +
+                          (state.showpaginationLoader ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index >= state.searchResultsModel.images.length) {
+                          return const SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
                         return ViewImage(
                           imageUrl:
                               state.searchResultsModel.images[index].cocoUrl,
