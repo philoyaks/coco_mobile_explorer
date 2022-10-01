@@ -1,4 +1,4 @@
-import 'package:coco_mobile_explorer/core/constants/api_endpoints.dart';
+import 'package:coco_mobile_explorer/features/search/presentation/widgets/image_viewer_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController scrollController = ScrollController();
+  TextEditingController searchTextEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -18,17 +19,13 @@ class _HomeScreenState extends State<HomeScreen> {
           scrollController.position.maxScrollExtent) {
         Future.delayed(Duration.zero, () {
           debugPrint("Reached the end of the list");
-          // BlocProvider.of<PokemonBloc>(context).add(LoadMorePokemon(context));
         });
-        // if (continuationLoader.isFalse) {
-        //   continuationLoader.value = true;
-        //   await loadPokemonResults();
-        //   continuationLoader.value = false;
-        // }
       }
     });
     super.initState();
   }
+
+  void _handleSearch() {}
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +35,30 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          Row(
-            children: [
-              const SizedBox(width: 200, height: 50, child: TextField()),
-              ElevatedButton(onPressed: () {}, child: const Text('Search'))
-            ],
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: [
+                Expanded(
+                    child: SizedBox(
+                  height: 52,
+                  child: TextField(
+                    controller: searchTextEditingController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                    ),
+                  ),
+                )),
+                const SizedBox(
+                  width: 10,
+                ),
+                ElevatedButton(
+                    onPressed: () => _handleSearch(),
+                    child: const Text('Search'))
+              ],
+            ),
           ),
           // ),
           Expanded(
@@ -50,30 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: scrollController,
                 itemCount: 4,
                 itemBuilder: (context, index) {
-                  return const ShowImages();
+                  return const ViewImage();
                 }),
           )
         ],
-      ),
-    );
-  }
-}
-
-class ShowImages extends StatelessWidget {
-  const ShowImages({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 300,
-      margin: const EdgeInsets.only(top: 20),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(10),
-        image: const DecorationImage(
-          image: NetworkImage(AppEndpoints.testimage),
-          fit: BoxFit.fill,
-        ),
       ),
     );
   }
