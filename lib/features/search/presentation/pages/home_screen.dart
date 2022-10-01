@@ -59,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: TextField(
                     controller: searchTextEditingController,
                     decoration: InputDecoration(
+                      hintText: 'Category name',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16.0),
                       ),
@@ -81,7 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       backgroundColor: Colors.blue,
-                      content: Text('Invalid Category'),
+                      content:
+                          Text('Invalid Category, Please input a valid one'),
                     ),
                   );
 

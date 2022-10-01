@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       create: (context) =>
           SearchBloc(SearchService(SearchRepositoryImplementation())),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Coco Mobile App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
