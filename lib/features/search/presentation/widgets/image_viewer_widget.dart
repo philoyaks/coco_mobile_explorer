@@ -18,8 +18,11 @@ class ViewImage extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Container(
-              color: Colors.lightBlue,
               margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              decoration: BoxDecoration(
+                color: Colors.lightBlue,
+                borderRadius: BorderRadius.circular(10),
+              ),
               height: 300,
             );
           }
