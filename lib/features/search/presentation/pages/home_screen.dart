@@ -1,5 +1,7 @@
+import 'package:coco_mobile_explorer/features/search/presentation/bloc/search_bloc.dart';
 import 'package:coco_mobile_explorer/features/search/presentation/widgets/image_viewer_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +27,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void _handleSearch() {}
+  // handles the search button click
+  void _handleSearch() {
+    String query = searchTextEditingController.text;
+    if (query.isNotEmpty) {
+      BlocProvider.of<SearchBloc>(context)
+          .add(StartSearchAllover()); //Starts all over if keyword is changed
+      BlocProvider.of<SearchBloc>(context).add(FetchSearchResults(
+          query.toLowerCase())); //fetches When search button is clicked
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +72,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           // ),
-          Expanded(
-            child: ListView.builder(
-                controller: scrollController,
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return const ViewImage();
-                }),
+          BlocConsumer<SearchBloc, SearchState>(
+            listener: (context, state) {
+              // TODO: implement listener
+            },
+            builder: (context, state) {
+              if (state is SearchResult) {
+                return Expanded(
+                  child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: state.searchResultsModel.images.length,
+                      itemBuilder: (context, index) {
+                        return ViewImage(
+                          imageUrl:
+                              state.searchResultsModel.images[index].cocoUrl,
+                        );
+                      }),
+                );
+              }
+              return Container();
+            },
           )
         ],
       ),

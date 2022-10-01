@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/api_endpoints.dart';
-
 class ViewImage extends StatelessWidget {
-  const ViewImage({super.key});
+  final String imageUrl;
+  const ViewImage({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +12,8 @@ class ViewImage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.blue,
         borderRadius: BorderRadius.circular(10),
-        image: const DecorationImage(
-          image: NetworkImage(AppEndpoints.testimage),
+        image: DecorationImage(
+          image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),

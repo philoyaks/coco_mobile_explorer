@@ -1,3 +1,5 @@
+import 'package:coco_mobile_explorer/features/search/data/datasources/search_service.dart';
+import 'package:coco_mobile_explorer/features/search/data/repositories/search_repo_implementation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,9 +16,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SearchBloc(),
+      create: (context) =>
+          SearchBloc(SearchService(SearchRepositoryImplementation())),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Coco Mobile App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
