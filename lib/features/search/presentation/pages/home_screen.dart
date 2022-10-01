@@ -100,23 +100,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
               if (state is SearchResult) {
                 return Expanded(
-                  child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: state.searchResultsModel.images.length +
-                          (state.showpaginationLoader ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= state.searchResultsModel.images.length) {
-                          return const SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-                        return ViewImage(
-                          imageUrl:
-                              state.searchResultsModel.images[index].cocoUrl,
-                        );
-                      }),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 3),
+                        child: Text(
+                            '${state.searchResultsModel.total} results found'),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                            controller: scrollController,
+                            itemCount: state.searchResultsModel.images.length +
+                                (state.showpaginationLoader ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index >=
+                                  state.searchResultsModel.images.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.only(bottom: 20.0),
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  ),
+                                );
+                              }
+                              return ViewImage(
+                                imageUrl: state
+                                    .searchResultsModel.images[index].cocoUrl,
+                                segmentation: state.searchResultsModel
+                                    .images[index].segmentations,
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
                 );
               }
               return Container();
